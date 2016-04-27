@@ -1,0 +1,17 @@
+{
+  "name": "gomi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.4",
+    "handlebars": "^4.0.5",
+    "moment": "^2.13.0",
+    "osmosis": "^0.1.3"
+  }
+}
