@@ -2,6 +2,7 @@ var osmosis = require('osmosis');
 var handlebars = require('handlebars');
 var moment = require('moment');
 var express = require('express');
+var async = require('async');
 
 var icsTemplate = handlebars.compile(
     'BEGIN:VCALENDAR\n' +
@@ -32,35 +33,45 @@ var icsTemplate = handlebars.compile(
     'END:VCALENDAR'
 );
 
-var app = express();
-app.get('/', function (req, res) {
-    res.set('Content-Type', 'text/calendar');
-
+var getCalendarFor = function(date, cb) {
     var calendar = [];
 
     osmosis
-        .get('https://www.53cal.jp/areacalendar', {
-            city: 1270133,
-            area: 1270133132,
-            yy: moment().year(),
-            mm: moment().month(),
-        })
-        .find('#calendar .theday p,#calendar .saturday p, #calendar .sunday p, #calendar .today p')
-        .set({day: 'img @src', kind: 'a @title'})
-        .data(function(entry) {
-            var kind = entry.kind.trim().replace(/\n+/, ', ');
-            var day = parseInt(entry.day.match(/\d+/)[0], 10);
+    .get('https://www.53cal.jp/areacalendar', {
+        city: 1270133,
+        area: 1270133132,
+        yy: date.year(),
+        mm: date.month(),
+    })
+    .find('#calendar .theday p, #calendar .saturday p, ' +
+          '#calendar .sunday p, #calendar .today p')
+    .set({day: 'img @src', kind: 'a @title'})
+    .data(function(entry) {
+        var kind = entry.kind.trim().replace(/\n+/, ', ');
+        var day = parseInt(entry.day.match(/\d+/)[0], 10);
 
-            if (kind === '') {
-                return;
-            }
+        if (kind === '') {
+            return;
+        }
 
-            calendar.push({
-                date: moment().date(day),
-                kind: kind,
-            });
-        })
-        .done(function() {
+        calendar.push({
+            date: date.date(day),
+            kind: kind,
+        });
+    })
+    .done(function() {
+        cb(null, calendar);
+    })
+    .error(function(err) {
+        cb(err, null);
+    });
+}
+
+
+var app = express();
+app.get('/', function (req, res) {
+    res.set('Content-Type', 'text/calendar');
+        getCalendarFor(moment(), function(err, calendar) {
             var days = calendar.map(function(entry) {
                 return {
                     formattedDay: entry.date.format('YYYYMMDD'),
@@ -71,8 +82,7 @@ app.get('/', function (req, res) {
             var ics = icsTemplate({days: days});
 
             res.send(ics);
-        })
-        .error(console.log);
+        });
 });
 app.get('/ping', function(req, res) {
     res.send('pong');
