@@ -34,6 +34,8 @@ var icsTemplate = handlebars.compile(
 
 var app = express();
 app.get('/', function (req, res) {
+    res.set('Content-Type', 'text/calendar');
+
     var calendar = [];
 
     osmosis
