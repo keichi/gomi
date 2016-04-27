@@ -55,7 +55,7 @@ var getCalendarFor = function(date, cb) {
         }
 
         calendar.push({
-            date: date.date(day),
+            date: moment(date).date(day),
             kind: kind,
         });
     })
@@ -71,7 +71,15 @@ var getCalendarFor = function(date, cb) {
 var app = express();
 app.get('/', function (req, res) {
     res.set('Content-Type', 'text/calendar');
-    getCalendarFor(moment(), function(err, calendar) {
+
+    var today = moment();
+    var nextWeek = moment().add(1, 'w');
+    var dates = [today];
+    if (today.month() != nextWeek.month()) {
+        dates.push(nextWeek);
+    }
+
+    async.concat(dates, getCalendarFor, function(err, calendar) {
         var days = calendar.map(function(entry) {
             return {
                 formattedDay: entry.date.format('YYYYMMDD'),
