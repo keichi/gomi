@@ -82,6 +82,11 @@ app.get('/:city/:area', function (req, res) {
 
     getCalendar = getCalendarFor(req.params.city, req.params.area);
     async.concat(dates, getCalendar, function(err, calendar) {
+        if (err) {
+            console.log(err);
+            return res.status(500).end();
+        }
+
         var days = calendar.map(function(entry) {
             return {
                 formattedDay: entry.date.format('YYYYMMDD'),
