@@ -2,11 +2,12 @@
   "name": "gomi",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Keichi Takahashi <keichi.t@me.com>",
   "license": "ISC",
   "dependencies": {
     "express": "^4.13.4",
