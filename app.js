@@ -45,7 +45,7 @@ var getCalendarFor = curry(function(city, area, date, cb) {
         mm: date.month() + 1,
     })
     .find('#calendar .theday p, #calendar .saturday p, ' +
-          '#calendar .sunday p, #calendar .today p')
+          '#calendar .sunday p, #calendar .today p, #calendar .theday_sun p')
     .set({day: 'img @src', kind: 'a @title'})
     .data(function(entry) {
         var kind = entry.kind.trim().replace(/\n+/, ', ');
