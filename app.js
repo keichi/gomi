@@ -3,6 +3,7 @@ var handlebars = require('handlebars');
 var moment = require('moment');
 var express = require('express');
 var async = require('async');
+var curry = require('curry');
 
 var icsTemplate = handlebars.compile(
     'BEGIN:VCALENDAR\n' +
@@ -33,13 +34,13 @@ var icsTemplate = handlebars.compile(
     'END:VCALENDAR'
 );
 
-var getCalendarFor = function(date, cb) {
+var getCalendarFor = curry(function(city, area, date, cb) {
     var calendar = [];
 
     osmosis
     .get('https://www.53cal.jp/areacalendar', {
-        city: 1270133,
-        area: 1270133132,
+        city: city,
+        area: area,
         yy: date.year(),
         mm: date.month() + 1,
     })
@@ -65,11 +66,11 @@ var getCalendarFor = function(date, cb) {
     .error(function(err) {
         cb(err, null);
     });
-}
+});
 
 
 var app = express();
-app.get('/', function (req, res) {
+app.get('/:city/:area', function (req, res) {
     res.set('Content-Type', 'text/calendar');
 
     var today = moment();
@@ -79,7 +80,8 @@ app.get('/', function (req, res) {
         dates.push(nextWeek);
     }
 
-    async.concat(dates, getCalendarFor, function(err, calendar) {
+    getCalendar = getCalendarFor(req.params.city, req.params.area);
+    async.concat(dates, getCalendar, function(err, calendar) {
         var days = calendar.map(function(entry) {
             return {
                 formattedDay: entry.date.format('YYYYMMDD'),
