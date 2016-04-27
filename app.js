@@ -41,7 +41,7 @@ var getCalendarFor = function(date, cb) {
         city: 1270133,
         area: 1270133132,
         yy: date.year(),
-        mm: date.month(),
+        mm: date.month() + 1,
     })
     .find('#calendar .theday p, #calendar .saturday p, ' +
           '#calendar .sunday p, #calendar .today p')
@@ -71,18 +71,18 @@ var getCalendarFor = function(date, cb) {
 var app = express();
 app.get('/', function (req, res) {
     res.set('Content-Type', 'text/calendar');
-        getCalendarFor(moment(), function(err, calendar) {
-            var days = calendar.map(function(entry) {
-                return {
-                    formattedDay: entry.date.format('YYYYMMDD'),
-                    formattedNextDay: entry.date.add(1, 'd').format('YYYYMMDD'),
-                    kind: entry.kind,
-                };
-            })
-            var ics = icsTemplate({days: days});
+    getCalendarFor(moment(), function(err, calendar) {
+        var days = calendar.map(function(entry) {
+            return {
+                formattedDay: entry.date.format('YYYYMMDD'),
+                formattedNextDay: entry.date.add(1, 'd').format('YYYYMMDD'),
+                kind: entry.kind,
+            };
+        })
+        var ics = icsTemplate({days: days});
 
-            res.send(ics);
-        });
+        res.send(ics);
+    });
 });
 app.get('/ping', function(req, res) {
     res.send('pong');
