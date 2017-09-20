@@ -68,11 +68,7 @@ var getCalendarFor = curry(function(city, area, date, cb) {
     });
 });
 
-
-var app = express();
-app.get('/:city/:area', function (req, res) {
-    res.set('Content-Type', 'text/calendar');
-
+module.exports.getCalendar = (event, context, callback) => {
     var today = moment();
     var nextWeek = moment().add(1, 'w');
     var dates = [today];
@@ -80,11 +76,12 @@ app.get('/:city/:area', function (req, res) {
         dates.push(nextWeek);
     }
 
-    getCalendar = getCalendarFor(req.params.city, req.params.area);
+    var params = event["queryStringParameters"];
+
+    getCalendar = getCalendarFor(params["city"], params["area"]);
     async.concat(dates, getCalendar, function(err, calendar) {
         if (err) {
-            console.log(err);
-            return res.status(500).end();
+            return callback(err);
         }
 
         var days = calendar.map(function(entry) {
@@ -96,15 +93,12 @@ app.get('/:city/:area', function (req, res) {
         })
         var ics = icsTemplate({days: days});
 
-        res.send(ics);
+        callback(null, {
+            statusCode: 200,
+            headers: {
+                "Content-Type": "text/calendar; charset=utf-8"
+            },
+            body: ics
+        });
     });
-});
-app.get('/ping', function(req, res) {
-    res.send('pong');
-});
-
-var port = process.env.PORT || 5000;
-app.listen(port, function () {
-  console.log('Gomi calendar listening on port ' + port + '!');
-});
-
+};
