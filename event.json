@@ -1,4 +1,6 @@
 {
-  "city": 1270133,
-  "area": 1270133132
+  "queryStringParameters": {
+    "city": 1270133,
+    "area": 1270133132
+  }
 }
