@@ -1,7 +1,6 @@
 var osmosis = require('osmosis');
 var handlebars = require('handlebars');
 var moment = require('moment');
-var express = require('express');
 var async = require('async');
 var curry = require('curry');
 
