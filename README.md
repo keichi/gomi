@@ -2,6 +2,6 @@
 
 ```
 npm -g install serverless
-docker run -v `pwd`:/data myrmex/lambda-packager
+docker run --platform linux/amd64 -v $(pwd):/share -w /share --rm -it node:14 npm i
 sls deploy
 ```
