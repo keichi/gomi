@@ -1,5 +1,9 @@
 # Gomi
 
+*53calがサービス終了したため使用できなくなりました*
+
+----
+
 これは，[53cal (ゴミカレ)](http://www.53cal.jp/) が提供するごみ収集日情報を
 スクレイピングし，iCalendar形式で配信するサーバレスWebアプリケーションです．
 カレンダーのURLをGoogle CalendarやCalendar.appなどに登録することで，
